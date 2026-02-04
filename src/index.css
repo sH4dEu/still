@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(
+    160deg,
+    #1e1b4b 0%,
+    #0f172a 45%,
+    #020617 100%
+  );
+  color: #e5e7eb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* SOFT AMBIENT GLOW */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  background:
+    radial-gradient(
+      ellipse at 30% 20%,
+      rgba(139, 92, 246, 0.18),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 70% 80%,
+      rgba(56, 189, 248, 0.12),
+      transparent 65%
+    );
+  filter: blur(80px);
+  pointer-events: none;
+}
