@@ -99,7 +99,7 @@ function App() {
 
   const sendToWhatsApp = () => {
     const msg = encodeURIComponent(selected.join(""));
-    window.location.href = `https://wa.me/9562786493?text=${msg}`;
+    window.location.href = `https://wa.me/919562786493?text=${msg}`;
   };
 
   return (
