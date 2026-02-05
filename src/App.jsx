@@ -1,8 +1,5 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import "./App.css";
-
-/* 🔐 PASSWORD */
-const PASSWORD = "hiraeth"; // change if needed
 
 const sentences = [
   "Some feelings don’t fade\njust because time moves on.",
@@ -17,58 +14,10 @@ const sentences = [
 const emojis = ["🤍", "😊", "😶", "🥺", "🌙", "✨", "💭"];
 
 function App() {
-  /* 🔐 PASSWORD STATE */
   const [unlocked, setUnlocked] = useState(false);
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (localStorage.getItem("access") === "true") {
-      setUnlocked(true);
-    }
-  }, []);
-
-  const checkPassword = () => {
-    if (input === PASSWORD) {
-      localStorage.setItem("access", "true");
-      setUnlocked(true);
-    } else {
-      setError("That word doesn’t open this space.");
-    }
-  };
-
-  /* 🔐 PASSWORD SCREEN */
-  if (!unlocked) {
-    return (
-      <div className="container">
-        <div className="glass-card password-card">
-          <p className="password-text">
-            This space is meant for someone specific.
-          </p>
-
-          <input
-            type="password"
-            className="password-input"
-            placeholder="Enter the word you know"
-            value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              setError("");
-            }}
-            onKeyDown={(e) => e.key === "Enter" && checkPassword()}
-          />
-
-          {error && <p className="password-error">{error}</p>}
-
-          <button className="send-btn" onClick={checkPassword}>
-            Enter
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  /* 🔓 ORIGINAL APP */
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const [hearts, setHearts] = useState([]);
@@ -79,7 +28,8 @@ function App() {
   const frameHearts = useMemo(() => {
     return Array.from({ length: 40 }).map(() => {
       const side = Math.floor(Math.random() * 4);
-      let top = "0%", left = "0%";
+      let top = "0%";
+      let left = "0%";
 
       if (side === 0) {
         top = `${Math.random() * 12}%`;
@@ -106,6 +56,14 @@ function App() {
       };
     });
   }, []);
+
+  const checkPassword = () => {
+    if (input.trim().toLowerCase() === "hiraeth") {
+      setUnlocked(true);
+    } else {
+      setError("That’s not the word.");
+    }
+  };
 
   const nextSentence = () => {
     if (index >= sentences.length - 1) {
@@ -146,86 +104,114 @@ function App() {
 
   return (
     <div className="container">
-      <div className="glass-card">
-        {frameHearts.map((h, i) => (
-          <span
-            key={i}
-            className="frame-heart"
-            style={{
-              top: h.top,
-              left: h.left,
-              transform: `translate(${h.driftX}px, ${h.driftY}px) rotate(${h.rotate})`,
-              opacity: h.opacity,
-              fontSize: h.size
+      {!unlocked ? (
+        <div className="glass-card password-card">
+          <p className="password-text">
+            This space is meant for someone specific.
+          </p>
+
+          <input
+            type="password"
+            className="password-input"
+            placeholder="Enter the word you know"
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              setError("");
             }}
-          >
-            ♡
-          </span>
-        ))}
+            onKeyDown={(e) => e.key === "Enter" && checkPassword()}
+          />
 
-        {stage === "story" && (
-          <>
-            <div className="content-area">
-              <p className={`text ${visible ? "show" : ""}`}>
-                {sentences[index].split("\n").map((line, i) => (
-                  <span key={i}>
-                    {line}
-                    <br />
-                  </span>
-                ))}
-              </p>
-            </div>
+          {error && <p className="password-error">{error}</p>}
 
-            <div className="heart-area">
-              <div className="button-wrapper">
-                {hearts.map((h) => (
-                  <span
-                    key={h.id}
-                    className="floating-heart"
-                    style={{
-                      "--x": `${h.x}px`,
-                      "--y": `${h.y}px`
-                    }}
+          <button className="send-btn" onClick={checkPassword}>
+            Enter
+          </button>
+        </div>
+      ) : (
+        <div className="glass-card">
+          {frameHearts.map((h, i) => (
+            <span
+              key={i}
+              className="frame-heart"
+              style={{
+                top: h.top,
+                left: h.left,
+                transform: `translate(${h.driftX}px, ${h.driftY}px) rotate(${h.rotate})`,
+                opacity: h.opacity,
+                fontSize: h.size
+              }}
+            >
+              ♡
+            </span>
+          ))}
+
+          {stage === "story" && (
+            <>
+              <div className="content-area">
+                <p className={`text ${visible ? "show" : ""}`}>
+                  {sentences[index].split("\n").map((line, i) => (
+                    <span key={i}>
+                      {line}
+                      <br />
+                    </span>
+                  ))}
+                </p>
+              </div>
+
+              <div className="heart-area">
+                <div className="button-wrapper">
+                  {hearts.map((h) => (
+                    <span
+                      key={h.id}
+                      className="floating-heart"
+                      style={{
+                        "--x": `${h.x}px`,
+                        "--y": `${h.y}px`
+                      }}
+                    >
+                      ♡
+                    </span>
+                  ))}
+
+                  <button
+                    className={`love-btn ${pressed ? "pressed" : ""}`}
+                    onClick={nextSentence}
                   >
                     ♡
-                  </span>
-                ))}
-
-                <button
-                  className={`love-btn ${pressed ? "pressed" : ""}`}
-                  onClick={nextSentence}
-                >
-                  ♡
-                </button>
+                  </button>
+                </div>
               </div>
-            </div>
-          </>
-        )}
+            </>
+          )}
 
-        {stage === "emoji" && (
-          <div className="emoji-section">
-            <div className="emoji-grid">
-              {emojis.map((e) => (
-                <button
-                  key={e}
-                  className={`emoji-btn ${selected.includes(e) ? "active" : ""}`}
-                  onClick={() => toggleEmoji(e)}
-                >
-                  {e}
-                </button>
-              ))}
-            </div>
+          {stage === "emoji" && (
+            <div className="emoji-section">
+              <div className="emoji-grid">
+                {emojis.map((e) => (
+                  <button
+                    key={e}
+                    className={`emoji-btn ${
+                      selected.includes(e) ? "active" : ""
+                    }`}
+                    onClick={() => toggleEmoji(e)}
+                  >
+                    {e}
+                  </button>
+                ))}
+              </div>
 
-            <button
-              className="send-btn"
-              disabled={selected.length === 0}
-              onClick={sendToWhatsApp}
-            >
-              Send
-            </button>
-          </div>
-        )}
-      </div>
+              <button
+                className="send-btn"
+                disabled={selected.length === 0}
+                onClick={sendToWhatsApp}
+              >
+                Send
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
