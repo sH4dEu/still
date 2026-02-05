@@ -1,5 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import "./App.css";
+
+/* 🔐 PASSWORD */
+const PASSWORD = "hiraeth"; // change if needed
 
 const sentences = [
   "Some feelings don’t fade\njust because time moves on.",
@@ -7,12 +10,65 @@ const sentences = [
   "You were honest too,\nabout where your heart was.",
   "This isn’t me asking again.",
   "It’s just me saying —\nI’m still here.",
-  "If you ever feel like talking,\nyou know where to find me."
+  "If you ever feel like talking,\nyou know where to find me.",
+  "Some things don’t need to be said\nfor them to be true."
 ];
 
 const emojis = ["🤍", "😊", "😶", "🥺", "🌙", "✨", "💭"];
 
 function App() {
+  /* 🔐 PASSWORD STATE */
+  const [unlocked, setUnlocked] = useState(false);
+  const [input, setInput] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (localStorage.getItem("access") === "true") {
+      setUnlocked(true);
+    }
+  }, []);
+
+  const checkPassword = () => {
+    if (input === PASSWORD) {
+      localStorage.setItem("access", "true");
+      setUnlocked(true);
+    } else {
+      setError("That word doesn’t open this space.");
+    }
+  };
+
+  /* 🔐 PASSWORD SCREEN */
+  if (!unlocked) {
+    return (
+      <div className="container">
+        <div className="glass-card password-card">
+          <p className="password-text">
+            This space is meant for someone specific.
+          </p>
+
+          <input
+            type="password"
+            className="password-input"
+            placeholder="Enter the word you know"
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              setError("");
+            }}
+            onKeyDown={(e) => e.key === "Enter" && checkPassword()}
+          />
+
+          {error && <p className="password-error">{error}</p>}
+
+          <button className="send-btn" onClick={checkPassword}>
+            Enter
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /* 🔓 ORIGINAL APP */
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const [hearts, setHearts] = useState([]);
@@ -20,28 +76,21 @@ function App() {
   const [selected, setSelected] = useState([]);
   const [pressed, setPressed] = useState(false);
 
-  // ❤️ 40 hearts around ALL sides
   const frameHearts = useMemo(() => {
     return Array.from({ length: 40 }).map(() => {
-      const side = Math.floor(Math.random() * 4); // 0 top, 1 right, 2 bottom, 3 left
-
-      let top = "0%";
-      let left = "0%";
+      const side = Math.floor(Math.random() * 4);
+      let top = "0%", left = "0%";
 
       if (side === 0) {
-        // top
         top = `${Math.random() * 12}%`;
         left = `${Math.random() * 90}%`;
       } else if (side === 1) {
-        // right
         top = `${Math.random() * 90}%`;
         left = `${88 + Math.random() * 8}%`;
       } else if (side === 2) {
-        // bottom
         top = `${88 + Math.random() * 8}%`;
         left = `${Math.random() * 90}%`;
       } else {
-        // left
         top = `${Math.random() * 90}%`;
         left = `${Math.random() * 12}%`;
       }
@@ -92,13 +141,12 @@ function App() {
 
   const sendToWhatsApp = () => {
     const msg = encodeURIComponent(selected.join(""));
-    window.location.href = `https://wa.me/9562786493?text=${msg}`;
+    window.location.href = `https://wa.me/YOUR_NUMBER?text=${msg}`;
   };
 
   return (
     <div className="container">
       <div className="glass-card">
-        {/* ❤️ hearts on all sides */}
         {frameHearts.map((h, i) => (
           <span
             key={i}

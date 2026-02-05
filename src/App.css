@@ -160,3 +160,29 @@
 .send-btn:disabled {
   opacity: 0.4;
 }
+.password-card {
+  text-align: center;
+}
+
+.password-text {
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+.password-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.12);
+  color: white;
+  margin-bottom: 14px;
+  outline: none;
+}
+
+.password-error {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  margin-bottom: 12px;
+}
